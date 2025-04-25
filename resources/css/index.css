@@ -1,0 +1,456 @@
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f9f9f9;
+  color: #333;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+h1, h2 {
+  margin: 0;
+  padding: 0;
+}
+
+h3 {
+  color: white;
+}
+
+button {
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+}
+
+.header {
+  margin: 0 auto;
+  background-color: #333;
+  color: white;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.header h1 {
+  font-size: 28px;
+  margin: 0;
+}
+
+.header .nav {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+.header .nav button {
+  background: transparent;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  font-size: 16px;
+  transition: background-color 0.4s;
+}
+
+.header .nav button:hover {
+  background-color: #444;
+}
+
+.toolbar {
+  background-color: white;
+  padding: 20px;
+  display: flex;
+  gap: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  justify-content: center;
+}
+
+.toolbar button {
+  padding: 10px 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #007bff;
+  color: white;
+  font-size: 16px;
+  transition: background-color 0.4s;
+}
+
+.toolbar button:hover {
+  background-color: #0056b3;
+}
+
+.sidebar {
+  width: 180px;
+  background-color: rgba(0, 0, 0, 0.6);
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  overflow: hidden;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar.open {
+  display: flex;
+}
+
+.sidebar button {
+  background-color: transparent;
+  color: white;
+  border: none;
+  padding: 10px;
+  font-size: 22px;
+  text-align: left;
+}
+
+.sidebar button:hover {
+  background-color: #444;
+}
+
+.content {
+  margin-left: 280px;
+  transition: margin-left 0.3s ease;
+  padding: 20px;
+}
+
+.board-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.board {
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 16px;
+  margin: 16px 0;
+  border-radius: 8px;
+}
+
+.board h3 {
+  color: black;
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.board .tasks {
+  margin-top: 10px;
+}
+
+.board input {
+  padding: 10px;
+  width: 100%;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+@media screen and (max-width: 768px) {
+  .content {
+    margin-left: 0; 
+  }
+
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: static;
+  }
+
+  .sidebar button {
+    text-align: center;
+  }
+
+  .header .nav {
+    display: none; 
+  }
+
+  .toolbar {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .board-list {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .header {
+    padding: 10px;
+  }
+
+  .toolbar button {
+    padding: 8px 12px;
+  }
+
+  .board {
+    width: 100%;
+  }
+}
+
+.create-board-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.create-board-btn:hover {
+  background-color: #0056b3;
+}
+
+.cancel-btn {
+  background-color: #f0f0f0;
+  color: #333;
+  border: none;
+  padding: 10px 15px;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.cancel-btn:hover {
+  background-color: #e0e0e0;
+}
+
+.create-btn {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.create-btn:hover {
+  background-color: #218838;
+}
+
+.input-field {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  margin-bottom: 20px;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+}
+
+.input-field:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.modal {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.modal h2 {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.modal .modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+}
+
+.modal .modal-actions button {
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.modal .modal-actions .cancel-btn {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.modal .modal-actions .cancel-btn:hover {
+  background-color: #e0e0e0;
+}
+
+.modal .modal-actions .create-btn {
+  background-color: #28a745;
+  color: white;
+}
+
+.modal .modal-actions .create-btn:hover {
+  background-color: #218838;
+}
+
+.calendar-modal,
+.table-modal {
+  max-width: 800px;
+  margin: 40px auto;
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-modal h2,
+.table-modal h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.calendar-controls {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.calendar-controls input {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+
+.calendar-week {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+  padding: 10px;
+  background-color: #f4f4f4;
+  border-radius: 8px;
+  overflow-x: auto;
+}
+
+.calendar-day {
+  flex: 1;
+  min-width: 100px;
+  max-width: 140px;
+  padding: 10px;
+  background-color: white;
+  border-radius: 6px;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.05);
+  text-align: center;
+}
+
+.calendar-day:hover {
+  background-color: #d0e5ff;
+}
+
+.calendar-weekday {
+  font-size: 14px;
+  color: #555;
+}
+
+.calendar-date {
+  font-size: 16px;
+  font-weight: bold;
+  margin-top: 4px;
+}
+
+.board-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 16px;
+}
+
+.board-table th,
+.board-table td {
+  padding: 12px 16px;
+  border: 1px solid #ddd;
+}
+
+.board-table th {
+  background-color: #f5f5f5;
+  text-align: left;
+  color: #333;
+}
+
+.board-table tr:hover {
+  background-color: #f0f8ff;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 200px;
+  z-index: 50;
+}
+
+.task-input {
+  width: 90%;
+  padding: 8px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+.add-task-btn,
+.add-subtask-btn {
+  background-color: #4f46e5;
+  color: white;
+  padding: 8px 14px;
+  margin-top: 6px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.add-task-btn:hover,
+.add-subtask-btn:hover {
+  background-color: #3730a3;
+}
+
+.sidebar-btn {
+  background-color: black;
+  color: white; 
+  border: none;
+  padding: 10px;
+  font-size: 24px; 
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.sidebar-btn:hover {
+  background-color: #444; 
+  transform: scale(1.1); 
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar ul li {
+  margin: 10px 0;
+  color: white;
+}
