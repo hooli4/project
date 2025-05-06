@@ -51,9 +51,4 @@ class AuthController extends Controller
 
         return response()->json(['message' => 'Successfully registered']);
     }
-
-    public function deleteEmails() {
-        User::whereNull('email_verified_at')->delete();
-        return response()->json(['message' => 'successfuly deleted']);
-    }
 }
