@@ -44,7 +44,7 @@
       <a href="mailto:support@tuskpanel.com"><b>support@tuskpanel.com</b></a>
     </div>
   </footer>
-  <script src="js/logic.js"></script>
+  <script src={{ asset("js/logic.js") }}></script>
   <script>
     $(document).ready(function() {
       $('#reg_form').on('submit', function(e) {
