@@ -13,3 +13,7 @@ Route::get('/register', function() {
 Route::get('/register/confirm-email', function() {
     return view('confirm-email');
 })->name('confirm-email');
+
+Route::get('/projectList', function() {
+    return view('projects');
+});
