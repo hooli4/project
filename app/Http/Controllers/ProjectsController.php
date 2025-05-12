@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\ProjectResource;
 use App\Models\Project;
+use App\Models\ProjectsUsers;
+use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
 class ProjectsController extends Controller
@@ -21,14 +23,14 @@ class ProjectsController extends Controller
     public function createProject(Request $request) {
         $request->validate([
             'title' => 'required|string|min:2|max:64',
-            'description' => 'required|string|min:2|max:256',
+            'description' => 'required|string|min:2|max:256'
         ]);
 
         $user = Auth::user();
 
         $project = Project::create([
             'title' => $request->title,
-            'description' => $request->description,
+            'description' => $request->description
         ]);
 
         $user->projects()->attach($project->id);
@@ -52,8 +54,13 @@ class ProjectsController extends Controller
             ], 401);
         }
 
-        Project::find('id', $request->id);
+        $project = Project::find($request->id);
 
+        if (!$project) {
+            return response()->json(['message' => 'Unable to find project'], 404);
+        }
+
+        $project->delete();
         return response()->json([
             'message' => 'Successfully deleted',
         ]);
@@ -65,9 +72,7 @@ class ProjectsController extends Controller
             'description' => 'required|string|min:2|max:256',
         ]);
 
-        $user = Auth::user();
-
-        $project = Project::find('id', $request->id);
+        $project = Project::find($request->id);
 
         $project->title = $request->title;
         $project->description = $request->description;
@@ -76,5 +81,34 @@ class ProjectsController extends Controller
         return response()->json([
             'message' => 'Successfully updated',
         ]);
+    }
+
+    public function inviteToProject(Request $request) {
+        $request->validate([
+            'email' => 'required|string|email:rfc',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return response()->json(['message' => 'Данного пользователя не существует'], 404);
+        }
+
+        $project = Project::find($request->project_id);
+
+        if (!$project) {
+            return response()->json(['message' => 'Данного проекта не существует'], 404);
+        }
+
+        $ProjectUsers = ProjectsUsers::where('project_id', $project->id)->
+        where('user_id', $user->id)->first();
+
+        if ($ProjectUsers) {
+            return response()->json(['message' => 'Пользователь уже является участником данного проекта']);
+        }
+        
+        $user->projects()->attach($project->id);
+
+        return response()->json(['message' => 'successfully invited']);
     }
 }

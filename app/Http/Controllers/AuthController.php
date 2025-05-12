@@ -3,12 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\RegisterUserRequest;
+use App\Http\Resources\UserResource;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 use App\Mail\ConfirmEmail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\LoginUserRequest;
 
 class AuthController extends Controller
 {
@@ -49,6 +52,50 @@ class AuthController extends Controller
         $user->tokenEmailConfirm = null;
         $user->save();
 
-        return response()->json(['message' => 'Successfully registered']);
+        $username = $user->name;
+        $token = $user->createToken("Auth token for $username")->plainTextToken;
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Successfully registered',
+            'token' => $token,
+        ]);
+    }
+
+    public function login(LoginUserRequest $request) {
+        if (Auth::attempt($request->only(['email', 'password']))) {
+            $user = Auth::user();
+
+            if ($user->email_verified_at === null) {
+                return response()->json([
+                    'message' => 'Ваша электронная почта не подтверждена',
+                ]);
+            }
+
+            $username = $user->name;
+            $token = $user->createToken("Auth token for $username")->plainTextToken;
+
+            return response()->json([
+                'status' => 200,
+                'message' => 'Successfully authorized',
+                'token' => $token,
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'Wrong name or password',
+        ], 401);
+
+    }
+
+    public function logout() {
+        Auth::user()->currentAccessToken()->delete();
+        return response()->json(['message' => 'Successfull logout']);
+    }
+
+    public function showPersonalInfo() {
+        $user = Auth::user()->get();
+
+        return UserResource::collection($user);
     }
 }

@@ -7,12 +7,16 @@ use Illuminate\Support\Facades\Route;
 Route::get('/register/confirm-email/{token}', [AuthController::class, 'confirmEmail'])->name('api_email_confirm');
 
 Route::post('/register', [AuthController::class, 'register'])->middleware('RedirectIfAuth')->name('api_reg');
+Route::post('/login', [AuthController::class, 'login'])->middleware('RedirectIfAuth')->name('api_log');
 
 Route::get('/getProjectsList', [ProjectsController::class, 'showProjects']);
 
 Route::prefix('/projects')->middleware(['auth:sanctum'])->group(function() {
     Route::get('/getList', [ProjectsController::class, 'showProjects']);
     Route::post('/create', [ProjectsController::class, 'createProject']);
-    Route::delete('/delete', [ProjectsController::class, 'deleteProject']);
-    Route::put('/update', [ProjectsController::class, 'updateProject']);
+    Route::delete('/delete/{id}', [ProjectsController::class, 'deleteProject']);
+    Route::put('/update/{id}', [ProjectsController::class, 'updateProject']);
 });
+
+Route::post('/logout', [AuthController::class, 'logout'])->middleware(['auth:sanctum'])->name('api_logout');
+Route::get('/me', [AuthController::class, 'showPersonalInfo'])->middleware(['auth:sanctum'])->name('api_userInfo');
