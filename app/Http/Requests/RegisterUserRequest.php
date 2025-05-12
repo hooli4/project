@@ -44,6 +44,11 @@ class RegisterUserRequest extends FormRequest
                 'email:rfc',
                 'unique:users,email',
             ],
+            'c_password' => [
+                'required',
+                'string',
+                'same:password',
+            ]
         ];
     }
 
@@ -63,6 +68,8 @@ class RegisterUserRequest extends FormRequest
             'email.required' => 'Необходимо заполнить поле с электронной почтой',
             'email.email' => 'Некорректный email',
             'email.unique' => 'Данный email уже зарегистрирован',
+            'c_password.required' => 'Повторите пароль',
+            'c_password.same' => 'Пароли не совпадают',
         ];
     }
 }

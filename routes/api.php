@@ -6,8 +6,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/register/confirm-email/{token}', [AuthController::class, 'confirmEmail'])->name('api_email_confirm');
 
-Route::post('/register', [AuthController::class, 'register'])->middleware('RedirectIfAuth')->name('api_reg');
-Route::post('/login', [AuthController::class, 'login'])->middleware('RedirectIfAuth')->name('api_log');
+Route::post('/register', [AuthController::class, 'register'])->name('api_reg');
+Route::post('/login', [AuthController::class, 'login'])->name('api_log');
 
 Route::get('/getProjectsList', [ProjectsController::class, 'showProjects']);
 
