@@ -21,3 +21,7 @@ Route::get('/register/confirm-email', function() {
 Route::get('/projectList', function() {
     return view('projects');
 });
+
+Route::get('/project', function() {
+    return view('project');
+});
