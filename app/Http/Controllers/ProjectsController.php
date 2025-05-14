@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\ProjectResource;
 use App\Models\Project;
-use App\Models\ProjectsUsers;
+use App\Models\ProjectsUsersRoles;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
@@ -41,7 +41,8 @@ class ProjectsController extends Controller
             'description' => $request->description
         ]);
 
-        $user->projects()->attach($project->id);
+        $user->projects()->attach($project->id, ['role_id' => 1]);
+        
 
         return response()->json([
             'message' => 'successfully created'
@@ -108,7 +109,7 @@ class ProjectsController extends Controller
             return response()->json(['message' => 'Данного проекта не существует'], 404);
         }
 
-        $projectUsers = ProjectsUsers::where('project_id', $project->id)->
+        $projectUsers = ProjectsUsersRoles::where('project_id', $project->id)->
         where('user_id', $user->id)->first();
 
         if ($projectUsers) {
@@ -117,7 +118,7 @@ class ProjectsController extends Controller
         
         $user->projects()->attach($project->id);
 
-        $projectUsers = ProjectsUsers::where('project_id', $project->id)->
+        $projectUsers = ProjectsUsersRoles::where('project_id', $project->id)->
         where('user_id', $user->id)->first();
 
         $projectUsers->invited = 1;
@@ -129,12 +130,12 @@ class ProjectsController extends Controller
     public function leaveProject(Request $request) {
         $user = Auth::user();
 
-        $projectUsers = ProjectsUsers::where('project_id', $request->id)->
+        $projectUsers = ProjectsUsersRoles::where('project_id', $request->id)->
         where('user_id', $user->id)->first();
 
         $projectUsers->delete();
 
-        $projectUsers = ProjectsUsers::where('project_id', $request->id)->first();
+        $projectUsers = ProjectsUsersRoles::where('project_id', $request->id)->first();
 
         if (!$projectUsers) {
             Project::find($request->id)->delete();
@@ -146,7 +147,7 @@ class ProjectsController extends Controller
     public function acceptInvitation(Request $request) {
         $user = Auth::user();
 
-        $projectUsers = ProjectsUsers::where('project_id', $request->id)->
+        $projectUsers = ProjectsUsersRoles::where('project_id', $request->id)->
         where('user_id', $user->id)->first();
 
         $projectUsers->invited = 0;

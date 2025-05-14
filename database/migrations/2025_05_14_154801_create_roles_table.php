@@ -11,8 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('projects_users', function (Blueprint $table) {
-            $table->integer('invited')->default(0);
+        Schema::create('roles', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
         });
     }
 
@@ -21,8 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('projects_users', function (Blueprint $table) {
-            $table->dropColumn('invited');
-        });
+        Schema::dropIfExists('roles');
     }
 };

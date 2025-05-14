@@ -12,6 +12,10 @@ class Project extends Model
     ];
 
     public function users() {
-        return $this->belongsToMany(User::class, 'projects_users');
+        return $this->belongsToMany(User::class, 'projects_users_roles');
+    }
+
+    public function roles() {
+        return $this->belongsToMany(Role::class, 'projects_users_roles');
     }
 }

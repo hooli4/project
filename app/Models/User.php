@@ -50,6 +50,10 @@ class User extends Authenticatable
     }
 
     public function projects() {
-        return $this->belongsToMany(Project::class, 'projects_users');
+        return $this->belongsToMany(Project::class, 'projects_users_roles');
+    }
+
+    public function roles() {
+        return $this->belongsToMany(Role::class, 'projects_users_roles');
     }
 }
