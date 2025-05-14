@@ -72,7 +72,7 @@ button:hover {
     background-color: #555;
 }
 
-.reg {
+.login {
     display: flex;
     justify-content: space-between;
     margin-top: 20px;
@@ -100,7 +100,7 @@ footer {
     text-decoration: underline;
 }
 
-.linkToLogin {
+.linkToRegister {
     display: flex;
     margin: 15px;
 }

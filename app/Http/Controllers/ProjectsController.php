@@ -15,7 +15,15 @@ class ProjectsController extends Controller
     public function showProjects() {
         $user = Auth::user();
 
-        $projects = $user->projects()->get();
+        $projects = $user->projects()->where('invited', 0)->get();
+
+        return ProjectResource::collection($projects);
+    }
+
+    public function showInvitations() {
+        $user = Auth::user();
+
+        $projects = $user->projects()->where('invited', 1)->get();
 
         return ProjectResource::collection($projects);
     }
@@ -94,21 +102,56 @@ class ProjectsController extends Controller
             return response()->json(['message' => 'Данного пользователя не существует'], 404);
         }
 
-        $project = Project::find($request->project_id);
+        $project = Project::find($request->id);
 
         if (!$project) {
             return response()->json(['message' => 'Данного проекта не существует'], 404);
         }
 
-        $ProjectUsers = ProjectsUsers::where('project_id', $project->id)->
+        $projectUsers = ProjectsUsers::where('project_id', $project->id)->
         where('user_id', $user->id)->first();
 
-        if ($ProjectUsers) {
-            return response()->json(['message' => 'Пользователь уже является участником данного проекта']);
+        if ($projectUsers) {
+            return response()->json(['message' => 'Пользователь уже является участником данного проекта или он не принял приглашение']);
         }
         
         $user->projects()->attach($project->id);
 
+        $projectUsers = ProjectsUsers::where('project_id', $project->id)->
+        where('user_id', $user->id)->first();
+
+        $projectUsers->invited = 1;
+        $projectUsers->save();
+
         return response()->json(['message' => 'successfully invited']);
+    }
+
+    public function leaveProject(Request $request) {
+        $user = Auth::user();
+
+        $projectUsers = ProjectsUsers::where('project_id', $request->id)->
+        where('user_id', $user->id)->first();
+
+        $projectUsers->delete();
+
+        $projectUsers = ProjectsUsers::where('project_id', $request->id)->first();
+
+        if (!$projectUsers) {
+            Project::find($request->id)->delete();
+        }
+
+        return response()->json(['message' => 'Вы успешно покинули проект']);
+    }
+
+    public function acceptInvitation(Request $request) {
+        $user = Auth::user();
+
+        $projectUsers = ProjectsUsers::where('project_id', $request->id)->
+        where('user_id', $user->id)->first();
+
+        $projectUsers->invited = 0;
+        $projectUsers->save();
+
+        return response()->json(['message' => 'Приглашение принято']);
     }
 }

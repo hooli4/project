@@ -39,12 +39,12 @@ class AuthController extends Controller
         $user = User::where('tokenEmailConfirm', $request->token)->first();
 
         if (!$user) {
-            return response()->json(['message' => 'URL has been expired'], 400);
+            return redirect()->route('register');
         }
 
         if ($user->tokenEmailExpiration < Carbon::now()) {
             $user->delete();
-            return response()->json(['message' => 'URL has been expired'], 400);
+            return redirect()->route('register');
         }
 
         $user->email_verified_at = Carbon::now();
@@ -52,14 +52,7 @@ class AuthController extends Controller
         $user->tokenEmailConfirm = null;
         $user->save();
 
-        $username = $user->name;
-        $token = $user->createToken("Auth token for $username")->plainTextToken;
-
-        return response()->json([
-            'status' => 200,
-            'message' => 'Successfully registered',
-            'token' => $token,
-        ]);
+        return redirect()->route('login');
     }
 
     public function login(LoginUserRequest $request) {
@@ -69,7 +62,7 @@ class AuthController extends Controller
             if ($user->email_verified_at === null) {
                 return response()->json([
                     'message' => 'Ваша электронная почта не подтверждена',
-                ]);
+                ], 401);
             }
 
             $username = $user->name;
@@ -83,7 +76,7 @@ class AuthController extends Controller
         }
 
         return response()->json([
-            'message' => 'Wrong name or password',
+            'message' => 'Неправильный пароль или почта',
         ], 401);
 
     }

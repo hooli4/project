@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>React in Laravel</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Проекты</title>
     @viteReactRefresh
     @vite(['resources/css/index.css', 'resources/js/ProjectLists.jsx'])
 </head>

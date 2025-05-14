@@ -2,17 +2,14 @@ import React, { useState } from 'react';
 
 import axios from 'axios';
 
-function RegistrationPage() {
+function LoginPage() {
   const [formData, setFormData] = useState({
-    name: '',
     email: '',
     password: '',
-    c_password: '',
   });
-  const [errorsName, setErrorsName] = useState([]);
+
   const [errorsPass, setErrorsPass] = useState([]);
   const [errorsEmail, setErrorsEmail] = useState([]);
-  const [errorsCPass, setErrorsCPass] = useState([]);
 
   const handleChange = (e) => {
     setFormData({
@@ -26,25 +23,18 @@ function RegistrationPage() {
 
     const csrftoken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-      axios.post('http://project/api/register', {
+      axios.post('http://project/api/login', {
         headers : {
             'X-CSRF-TOKEN' : csrftoken
         },
-        name : formData.name,
         email : formData.email,
         password : formData.password,
-        c_password: formData.c_password,
       }).then(function (response) {
-        window.location.href = 'http://project/register/confirm-email';
+        localStorage.setItem('token', response.data.token);
+        window.location.href = 'http://project/projectList';
       }).catch(function (error) {
-        if (error.response) {
-            if (error.response.data.errors.name) {
-                const errorsName = Object.values(error.response.data.errors.name).flat();
-                setErrorsName(errorsName);
-            }
-
-            else setErrorsName([]);
-
+        if (error.response.data.errors) {
+            
             if (error.response.data.errors.email) {
                 const errorsEmail = Object.values(error.response.data.errors.email).flat();
                 setErrorsEmail(errorsEmail);
@@ -59,15 +49,9 @@ function RegistrationPage() {
 
             else setErrorsPass([]);
 
-            if (error.response.data.errors.c_password) {
-                const errorsCPass = Object.values(error.response.data.errors.c_password).flat();
-                setErrorsCPass(errorsCPass);
-            }
-
-            else setErrorsCPass([]);
-
-        } else {
-            console.error('Ошибка: ', error.message);
+        } else if (error.response.data.message) {
+            setErrorsEmail([]);
+            setErrorsPass([error.response.data.message]);
         }
       });
   };
@@ -80,20 +64,8 @@ function RegistrationPage() {
       </header>
 
       <div className="container">
-        <h2>Регистрация</h2>
-        <form id="reg_form" onSubmit={handleSubmit}>
-          <input
-            type="text"
-            placeholder="Логин"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-          />
-          <div className="error-container">
-          {errorsName.map((msg, index) => (
-            <p key={index}>{msg}</p>
-          ))}
-        </div>
+        <h2>Авторизация</h2>
+        <form id="log_form" onSubmit={handleSubmit}>
           <input
             type="email"
             placeholder="Почта"
@@ -118,25 +90,13 @@ function RegistrationPage() {
             <p key={index}>{msg}</p>
           ))}
         </div>
-        <input
-            type="password"
-            placeholder="Повторите пароль"
-            name="c_password"
-            value={formData.c_password}
-            onChange={handleChange}
-          />
-          <div className="error-container">
-          {errorsCPass.map((msg, index) => (
-            <p key={index}>{msg}</p>
-          ))}
-          </div>
-          <div className="reg">
-            <button type="submit">Регистрация</button>
+          <div className="login">
+            <button type="submit">Авторизация</button>
           </div>
         </form>
 
         <div>
-            <a href="http://project/login" className="linkToLogin">Уже есть аккаунт?</a>
+            <a href="http://project/register" className="linkToRegister">Нет аккаунта?</a>
         </div>
 
       </div>
@@ -144,4 +104,4 @@ function RegistrationPage() {
   );
 }
 
-export default RegistrationPage;
+export default LoginPage;
