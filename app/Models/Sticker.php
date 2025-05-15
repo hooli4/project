@@ -15,6 +15,6 @@ class Sticker extends Model
     ];
 
     public function projects() {
-        $this->belongsToMany(Project::class, 'projects_stickers');
+        return $this->belongsToMany(Project::class, 'projects_stickers');
     }
 }

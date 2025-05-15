@@ -31,13 +31,6 @@ const styles = {
         display: 'flex',
         flexDirection: 'column',
     },
-    header: {
-        backgroundColor: 'black',
-        color: 'white',
-        padding: '1rem',
-        textAlign: 'center',
-        flexShrink: 0,
-    },
     main: {
         flexGrow: 1,
         minHeight: 'calc(100vh - 120px)',

@@ -19,6 +19,8 @@ return new class extends Migration
 
             $table->foreign('board_id')->references('id')->on('boards')->onDelete('cascade');
             $table->foreign('card_id')->references('id')->on('cards')->onDelete('cascade');
+
+            $table->integer('order');
         });
     }
 

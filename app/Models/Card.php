@@ -17,6 +17,6 @@ class Card extends Model
     ];
 
     public function boards() {
-        $this->belongsToMany(Board::class, 'boards_cards');
+        return $this->belongsToMany(Board::class, 'boards_cards')->withPivot('order');
     }
 }

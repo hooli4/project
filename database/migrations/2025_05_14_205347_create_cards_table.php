@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string('description');
             $table->string('priority');
             $table->string('status')->default('В ожидании');
-            $table->integer('order');
 
             $table->timestamps();
         });

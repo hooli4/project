@@ -16,10 +16,10 @@ class Board extends Model
     ];
 
     public function projects() {
-        $this->belongsToMany(Project::class, 'projects_boards');
+        return $this->belongsToMany(Project::class, 'projects_boards');
     }
 
     public function cards() {
-        $this->belongsToMany(Card::class, 'boards_cards');
+        return $this->belongsToMany(Card::class, 'boards_cards')->withPivot('order');
     }
 }
