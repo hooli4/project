@@ -18,7 +18,7 @@ Route::get('/projectList', function() {
     return view('projects');
 });
 
-Route::get('/project', function() {
+Route::get('/project/{project_id}', function() {
     return view('project');
 });
 

@@ -11,7 +11,7 @@ class Board extends Model
     protected $fillable = [
         'x',
         'y',
-        'name',
+        'title',
         'description',
     ];
 

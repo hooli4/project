@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('cards', function (Blueprint $table) {
             $table->id();
 
-            $table->string('name');
+            $table->string('text');
             $table->string('description');
             $table->string('priority');
             $table->string('status')->default('В ожидании');

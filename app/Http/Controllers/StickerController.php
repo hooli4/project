@@ -30,7 +30,7 @@ class StickerController extends Controller
 
     public function createSticker(Request $request) {
         $request->validate([
-            'name' => 'required|string',
+            'title' => 'required|string',
         ]);
 
         $user = Auth::user();
@@ -45,7 +45,7 @@ class StickerController extends Controller
         $sticker = Sticker::create([
             'x' => $request->x,
             'y' => $request->y,
-            'name' => $request->name,
+            'title' => $request->title,
         ]);
 
         $project = Project::find($request->project_id);

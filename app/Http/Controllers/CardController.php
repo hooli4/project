@@ -30,7 +30,7 @@ class CardController extends Controller
 
     public function createCard(Request $request) {
         $request->validate([
-            'name' => 'required|string',
+            'text' => 'required|string',
             'description' => 'required|string',
             'priority' => 'required|string',
             'status' => 'required|string',
@@ -50,7 +50,7 @@ class CardController extends Controller
         $count_of_cards = $board->cards()->count();
 
         $card = Card::create([
-            'name' => $request->name,
+            'text' => $request->text,
             'description' => $request->description,
             'priority' => $request->priority,
             'status' => $request->status,
@@ -91,7 +91,7 @@ class CardController extends Controller
 
     public function updateCard(Request $request) {
         $request->validate([
-            'name' => 'required|string',
+            'text' => 'required|string',
             'description' => 'required|string',
             'priority' => 'required|string',
             'status' => 'required|string',
@@ -108,7 +108,7 @@ class CardController extends Controller
 
         $card = Card::find($request->card_id);
 
-        $card->name = $request->name;
+        $card->text = $request->text;
         $card->description = $request->description;
         $card->priority = $request->priority;
         $card->status = $request->status;

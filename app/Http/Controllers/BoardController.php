@@ -30,7 +30,7 @@ class BoardController extends Controller
 
     public function createBoard(Request $request) {
         $request->validate([
-            'name' => 'required|string',
+            'title' => 'required|string',
             'description' => 'required|string',
         ]);
 
@@ -46,7 +46,7 @@ class BoardController extends Controller
         $board = Board::create([
             'x' => $request->x,
             'y' => $request->y,
-            'name' => $request->name,
+            'title' => $request->title,
             'description' => $request->description,
         ]);
 

@@ -11,7 +11,7 @@ class Sticker extends Model
     protected $fillable = [
         'x',
         'y',
-        'name',
+        'title',
     ];
 
     public function projects() {

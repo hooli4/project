@@ -23,7 +23,7 @@ function Projects({ projects, currentPage, pageSize, onAccept, onReject, project
             boxShadow: '0 2px 5px rgba(0,0,0,0.05)',
           }}
         >
-          <span style={{ fontSize: 16 }}>{project.title}</span>
+          <a href={`http://project/project/${project.id}`}><span style={{ fontSize: 16 }}>{project.title}</span></a>
           {!onAccept && onReject && (
           <div>
             <button

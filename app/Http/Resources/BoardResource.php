@@ -18,7 +18,7 @@ class BoardResource extends JsonResource
             'id' => $this->id,
             'x' => $this->x,
             'y' => $this->y,
-            'name' => $this->name,
+            'title' => $this->title,
             'description' => $this->description,
         ];
     }

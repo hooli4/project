@@ -9,7 +9,7 @@ class Card extends Model
     protected $table = 'cards';
 
     protected $fillable = [
-        'name',
+        'text',
         'description',
         'priority',
         'status',

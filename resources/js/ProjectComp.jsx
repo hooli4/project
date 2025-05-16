@@ -1,4 +1,7 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
+
 
 const styles = {
     card: {
@@ -138,7 +141,10 @@ const styles = {
     }
 };
 
+
 function App() {
+    const token = localStorage.getItem('token');
+    const { project_id } = useParams();
     const [boards, setBoards] = useState([]);
     const [stickers, setStickers] = useState([]);
     const [newBoardTitle, setNewBoardTitle] = useState('');
@@ -149,8 +155,8 @@ function App() {
     const [newCardText, setNewCardText] = useState('');
     const [newCardDescription, setNewCardDescription] = useState('');
     const [deleteConfirmation, setDeleteConfirmation] = useState({ visible: false, id: null, type: null });
-    const [newCardPriority, setNewCardPriority] = React.useState(-1); // 0 - низкий, 1 - средний, 2 - высокий
-    const [newCardStatus, setNewCardStatus] = React.useState(-1);
+    const [newCardPriority, setNewCardPriority] = React.useState(0); // 0 - низкий, 1 - средний, 2 - высокий
+    const [newCardStatus, setNewCardStatus] = React.useState(0);
     // Для управления редактированием карточки - сохраним id редактируемой карточки и ее поля
     const [editingCardId, setEditingCardId] = React.useState(null);
     const [editingCardData, setEditingCardData] = React.useState({ text: '', description: '', priority: 1, status: 'Ожидание' });
@@ -166,10 +172,207 @@ function App() {
         setNewStickerDescription('');
     };
 
-    const createBoard = () => {
-        if (newBoardTitle.trim() === '') return;
+    const fetchBoardsWithCards = async () =>  {
+        try {      
+            const boardsResponse = await axios.get(`http://project/api/boards/getList/project/${project_id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            });
+
+            if (boardsResponse.status !== 200) {
+                throw new Error('Ошибка при получении досок');
+            }
+            const boardsFromResponse = boardsResponse.data.data;
+
+            const boardsWithCards = await Promise.all(boardsFromResponse.map(async (board) => {
+                const cardsResponse = await axios.get(`http://project/api/cards/getList/project/${project_id}/board/${board.id}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    }
+                });
+
+                if (cardsResponse.status !== 200) {
+                    throw new Error(`Ошибка при получении карточек для доски ${board.id}`);
+                }
+
+                const cards = cardsResponse.data.data;
+
+                return {
+                    ...board,
+                    cards: cards || []
+                };
+            }));
+
+            return boardsWithCards;
+        } catch (error) {
+            return [];
+        }
+    } 
+
+    const fetchStickers = async () => {
+        try {
+            const stickersResponse = await axios.get(`http://project/api/stickers/getList/project/${project_id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            });
+
+            if (stickersResponse.status !== 200) {
+                throw new Error(`Ошибка при получении стикеров`);
+            }
+
+            return stickersResponse.data.data;
+        } catch (error) {
+            return [];
+        }
+    }
+
+const putCoordinates = async (dragDataObj, e) => {
+        const { draggingId, draggingType, offsetX, offsetY } = dragDataObj.current;
+        const newX = e.clientX - offsetX;
+        const newY = e.clientY - offsetY;
+        try {
+            if (draggingType == 'board') {
+                 await axios.put(`http://project/api/boards/updateBoardCoordinates/${draggingId}/x/${newX}/y/${newY}/project/${project_id}`, {}, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+            }
+    
+            if (draggingType == 'sticker') {
+                await axios.put(`http://project/api/stickers/updateStickerCoordinates/${draggingId}/x/${newX}/y/${newY}/project/${project_id}`, {}, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+            }
+        } catch (error) {
+        }
+    }
+
+    const APICreateSticker = async (newSticker) => {
+        try {
+            newSticker.project_id = project_id;
+            const response = await axios.post(`http://project/api/stickers/createSticker`, newSticker, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            })
+
+            if (response.status == 200) return response.data.id;
+        } catch(error) {
+            return false;
+        }
+    }
+
+    const APICreateBoard = async (newBoard) => {
+        try {
+            newBoard.project_id = project_id;
+            const response = await axios.post(`http://project/api/boards/createBoard`, newBoard, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            })
+
+            if (response.status == 200) return response.data.id;
+        } catch(error) {
+            return false;
+        }
+    }
+
+    const APICreateCard = (newCard, board_id) => {
+        try {
+            newCard.project_id = project_id;
+            newCard.board_id = board_id;
+            newCard.status = getstatusText(newCard.status);
+            newCard.priority = getPriorityText(newCard.priority);
+            const response = axios.post(`http://project/api/cards/createCard`, newCard, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            })
+
+            if (response.status == 200) return response.data.id;
+        } catch (error) {  
+            return false;          
+        }
+    }
+
+    const APIdeleteObject = async (type, id, board_id) => {
+        try {
+            if (type == 'board') {
+                await axios.delete(`http://project/api/boards/deleteBoard/${id}/project/${project_id}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+            }
+
+            if (type == 'card') {
+                await axios.delete(`http://project/api/cards/deleteCard/project/${project_id}/board/${board_id}/card/${id}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                })
+            }
+
+            if (type == 'sticker') {
+                await axios.delete(`http://project/api/stickers/deleteSticker/${id}/project/${project_id}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+            }
+        } catch (error) {      
+        }
+    }
+
+const APIMoveCard = async(direction, card_id, board_id) => {
+        try {
+            await axios.put(`http://project/api/cards/switchCards/${card_id}/direction/${direction}/board/${board_id}/project/${project_id}`, {}, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+        } catch (error) {
+        }
+    }
+    
+    const APIUpdateCard = async(newDataCard) => {
+        try {
+            await axios.put(`http://project/api/cards/updateCard/${card_id}/board/${board_id}/project/${project_id}`, newDataCard, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+        } catch (error) {
+        }
+    }
+
+    
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const [fetchedStickers, fetchedBoardsWithCards] = await Promise.all([
+                fetchStickers(),
+                fetchBoardsWithCards(),
+            ]);
+
+            setStickers(fetchedStickers);
+            setBoards(fetchedBoardsWithCards);
+        }
+
+        fetchData();
+    }, []);
+
+
+    const createBoard = async () => {
+        if (newBoardTitle.trim() === '') return; 
+        
         const newBoard = {
-            id: Date.now(),
+            id: Date(),
             title: newBoardTitle,
             description: newBoardDescription,
             cards: [],
@@ -177,23 +380,27 @@ function App() {
 
             y: window.innerHeight / 2 - 100,
         };
+        
+        newBoard.id = await APICreateBoard(newBoard);
+
         setBoards((prev) => [...prev, newBoard]);
         closeModal();
     };
 
-    const createSticker = () => {
+    const createSticker = async () => {
         if (newStickerTitle.trim() === '') return;
         const newSticker = {
-            id: Date.now(),
+            id: Date(),
             title: newStickerTitle,
             x: window.innerWidth / 2 - 120,
             y: window.innerHeight / 2 - 50,
         };
+        newSticker.id = await APICreateSticker(newSticker);
         setStickers((prev) => [...prev, newSticker]);
         closeModal();
     };
 
-    function addCardToBoard(boardId) {
+    const addCardToBoard = (boardId) => {
         if (!newCardText.trim()) return;
 
         // Ищем нужную доску
@@ -201,12 +408,13 @@ function App() {
             prevBoards.map((board) => {
                 if (board.id === boardId) {
                     const newCard = {
-                        id: Date.now(), // или иной уникальный id
+                        id: Date(),
                         text: newCardText,
                         description: newCardDescription,
                         priority: newCardPriority,  // добавлено
                         status: newCardStatus,      // добавлено
                     };
+
                     return { ...board, cards: [...board.cards, newCard] };
                 }
                 return board;
@@ -217,7 +425,7 @@ function App() {
         setNewCardText('');
         setNewCardDescription('');
         setNewCardPriority(0);
-        setNewCardStatus(-1);
+        setNewCardStatus(0);
     }
 
     function getPriorityColor(priority) {
@@ -225,6 +433,7 @@ function App() {
             case 0: return 'green';
             case 1: return 'yellow';
             case 2: return 'red';
+            default: return 'green';
         }
     }
     function getPriorityText(priority) {
@@ -232,12 +441,12 @@ function App() {
             case 0: return 'Низкий';
             case 1: return 'Средний';
             case 2: return 'Высокий';
+            default: return 'Низкий';
         }
     }
 
     function getstatusColor(status) {
         switch (status) {
-            case -1: return 'black';
             case 0: return 'black';
             case 1: return 'yellow';
             case 2: return 'green';
@@ -246,21 +455,21 @@ function App() {
     }
     function getstatusText(status) {
         switch (status) {
-            case -1: return 'Неизвестно';
             case 0: return 'Ожидание';
             case 1: return 'В разработке';
             case 2: return 'Завершён';
-            default: return 'Неизвестно';
+            default: return 'Ожидание';
         }
     }
     function getPriorityBorderColor(priority) {
         // Можно например сделать цветной бордер слева у карточки в зависимости от приоритета
-        return { borderLeft: `4px solid ${getPriorityColor(priority)}`, paddingLeft: '8px' };
+        return { borderLeft: `4px solid ${getPriorityColor(priority)}, paddingLeft: '8px'` };
     }
+
 
     function getstatusBorderColor(status) {
         // Можно например сделать цветной бордер слева у карточки в зависимости от приоритета
-        return { borderLeft: `4px solid ${getstatusColor(status)}`, paddingLeft: '8px' };
+        return { borderLeft: `4px solid ${getstatusColor(status)}, paddingLeft: '8px'` };
     }
 
     function saveCardEdits(boardId, cardId) {
@@ -312,7 +521,6 @@ function App() {
         const { draggingId, draggingType, offsetX, offsetY } = dragData.current;
         const newX = e.clientX - offsetX;
         const newY = e.clientY - offsetY;
-
         if (draggingType === 'board') {
             setBoards(prev => prev.map(b => b.id === draggingId ? { ...b, x: newX, y: newY } : b));
         } else if (draggingType === 'sticker') {
@@ -320,7 +528,8 @@ function App() {
         }
     };
 
-    const onMouseUp = () => {
+    const onMouseUp = (e) => {
+        putCoordinates(dragData, e);
         dragData.current.draggingId = null;
         dragData.current.draggingType = null;
         window.removeEventListener('mousemove', onMouseMove);
@@ -330,12 +539,15 @@ function App() {
     const deleteObject = (id, type) => {
         if (type === 'board') {
             setBoards(prev => prev.filter(b => b.id !== id));
+            APIdeleteObject(type, id);
         } else if (type === 'sticker') {
             setStickers(prev => prev.filter(s => s.id !== id));
+            APIdeleteObject(type, id);
         } else if (type === 'card') {
             const boardIndex = boards.findIndex(b => b.cards.some(c => c.id === id));
             if (boardIndex !== -1) {
                 const board = boards[boardIndex];
+                APIdeleteObject(type, id, board.id);
                 setBoards(prev => {
                     const updatedCards = board.cards.filter(c => c.id !== id);
                     return prev.map(b => b.id === board.id ? { ...b, cards: updatedCards } : b);
@@ -353,7 +565,7 @@ function App() {
         setDeleteConfirmation({ visible: false, id: null, type: null });
     };
 
-    const getDeleteConfirmationText = () => {
+const getDeleteConfirmationText = () => {
         switch (deleteConfirmation.type) {
             case 'board':
                 return "Вы уверены, что хотите удалить эту доску?";
@@ -387,6 +599,8 @@ function App() {
             cards[cardIndex] = temp;
         }
 
+        APIMoveCard(direction, cardId, boardId);
+
         setBoards(prev =>
             prev.map((b, index) =>
                 index === boardIndex ? { ...b, cards } : b
@@ -411,6 +625,7 @@ function App() {
                 zIndex: 1000,
                 color: 'white',
             }}>
+                <a href={'http://project/projectList'}>
                 <button style={{
                     backgroundColor: '#808080',
                     border: '6px inset black',
@@ -424,7 +639,8 @@ function App() {
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
-                }}>Профиль</button>
+                }}>Проекты</button>
+                </a>
 
                 <button style={{
                     backgroundColor: '#808080',
@@ -439,7 +655,7 @@ function App() {
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
-                }}>Настройки</button>
+                }}>Профиль</button>
             </div>
         );
     }
@@ -476,7 +692,7 @@ function App() {
 
 
                 {/* Рендер досок */}
-                {boards.map((board) => (
+                {boards.map((board) => (console.log(board.id),
                     <div
                         key={board.id}
                         style={{ ...styles.desk, left: board.x, top: board.y, position: 'absolute' }} // Если хотите оставлять возможность смещения
@@ -492,7 +708,7 @@ function App() {
                                 return (
                                     <div key={card.id} style={{ ...styles.card, borderLeft: getPriorityBorderColor(card.priority)}}>
 
-                                        {isEditing ? (
+                                    {isEditing ? (
                                             <>
                                                 <input
                                                     type="text"
@@ -539,8 +755,7 @@ function App() {
                                                         {editingCardData.status === 1 && <span style={{ color: 'yellow' }}>В разработке</span>}
                                                         {editingCardData.status === 2 && <span style={{ color: 'green' }}>Завершён</span>}
                                                     </div>
-
-                                                <button style={styles.buttonclose1} onClick={() => saveCardEdits(board.id, card.id)}><strong>Сохранить</strong></button>
+<button style={styles.buttonclose1} onClick={() => saveCardEdits(board.id, card.id)}><strong>Сохранить</strong></button>
                                                 <button style={styles.buttonclose1} onClick={() => setEditingCardId(null)}><strong>Отмена</strong></button>
                                             </>
                                         ) : (
@@ -589,7 +804,6 @@ function App() {
                                 placeholder="Название карточки"
                                 value={newCardText}
                                 onChange={(e) => setNewCardText(e.target.value)}
-
                                 style={styles.input}
                             />
                             <input
@@ -660,8 +874,8 @@ function App() {
                                     style={styles.input}
                                 />
                                 <button style={styles.buttonAdd}onClick={createBoard}>Создать доску</button>
-
-                                    <button style={styles.buttonAdd} onClick={closeModal}>Закрыть</button>
+                                <button style={styles.buttonAdd} 
+                                onClick={closeModal}>Закрыть</button>
                                 </center>
                             </div>
                         )}
