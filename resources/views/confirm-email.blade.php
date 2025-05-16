@@ -9,7 +9,7 @@
 <script src="../js/timer.js"></script>
 <body>
   <header>
-    <div></div>
+    <img src="/logo.png" alt="Лого" style="height: 40px; margin-right: 15px;">
     <div class="title">Tuskpanel</div>
     <div class="language-dropdown" id="languageDropdown">
       <div class="language-selected">Русский</div>
@@ -31,11 +31,11 @@
   <p id="timerText" style="display: none; color: gray;"></p>
 </div>
   <footer>
-    <div><b>© 2025 Tuskpanel &nbsp&nbsp&nbsp Все права защищены</b></div>
+    <div class="footer-links"><a>© 2025 Tuskpanel &nbsp;&nbsp;&nbsp; Все права защищены</a></div>
     <div class="footer-links">
-      <a><b>Telegram</b></a> | 
-      <a><b>@tuskpanel.com</b></a>
-    </div>
+      <a href="https://t.me/SVGNTaskObserver_bot" target="_blank"><b>Telegram</b></a> | 
+      <a href="mailto:mail@tuskpanel.com"><b>mail@tuskpanel.com</b></a>
+    </div> 
   </footer>
   <script src="../js/logic.js"></script>
 </body>

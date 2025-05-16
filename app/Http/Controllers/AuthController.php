@@ -3,12 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\RegisterUserRequest;
+use App\Http\Resources\UserResource;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 use App\Mail\ConfirmEmail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\LoginUserRequest;
 
 class AuthController extends Controller
 {
@@ -36,12 +39,12 @@ class AuthController extends Controller
         $user = User::where('tokenEmailConfirm', $request->token)->first();
 
         if (!$user) {
-            return response()->json(['message' => 'URL has been expired'], 400);
+            return redirect()->route('register');
         }
 
         if ($user->tokenEmailExpiration < Carbon::now()) {
             $user->delete();
-            return response()->json(['message' => 'URL has been expired'], 400);
+            return redirect()->route('register');
         }
 
         $user->email_verified_at = Carbon::now();
@@ -49,11 +52,43 @@ class AuthController extends Controller
         $user->tokenEmailConfirm = null;
         $user->save();
 
-        return response()->json(['message' => 'Successfully registered']);
+        return redirect()->route('login');
     }
 
-    public function deleteEmails() {
-        User::whereNull('email_verified_at')->delete();
-        return response()->json(['message' => 'successfuly deleted']);
+    public function login(LoginUserRequest $request) {
+        if (Auth::attempt($request->only(['email', 'password']))) {
+            $user = Auth::user();
+
+            if ($user->email_verified_at === null) {
+                return response()->json([
+                    'message' => 'Ваша электронная почта не подтверждена',
+                ], 401);
+            }
+
+            $username = $user->name;
+            $token = $user->createToken("Auth token for $username")->plainTextToken;
+
+            return response()->json([
+                'status' => 200,
+                'message' => 'Successfully authorized',
+                'token' => $token,
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'Неправильный пароль или почта',
+        ], 401);
+
+    }
+
+    public function logout() {
+        Auth::user()->currentAccessToken()->delete();
+        return response()->json(['message' => 'Successfull logout']);
+    }
+
+    public function showPersonalInfo() {
+        $user = Auth::user()->get();
+
+        return UserResource::collection($user);
     }
 }

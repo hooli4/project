@@ -5,16 +5,44 @@ html, body {
     flex-direction: column;
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
+    background-image: url('background.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+main {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 header {
-    background-color: #000;
+    background-color: #ffffff;
     color: #fff;
     padding: 20px 40px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     position: relative;
+}
+.header-left {
+  display: flex;
+  align-items: center;
+}
+.header-left .title {
+  font-weight: bold;
+  font-size: 20px;
+  margin-left: 15px;
+}
+.header-left img {
+  height: 40px;
+}
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
 
 .site-title {
@@ -23,7 +51,12 @@ header {
     margin: 0 auto;
     text-align: center;
 }
-
+.title {
+    color: #000000;
+    font-weight: bold;
+    font-size: 24px;
+    text-align: left;
+}
 .language-dropdown {
     position: relative;
     cursor: pointer;
@@ -33,7 +66,7 @@ header {
 .language-selected {
     display: flex;
     align-items: center;
-    color: white;
+    color: rgb(0, 0, 0);
     font-size: 14px;
 }
 
@@ -47,7 +80,7 @@ header {
     position: absolute;
     top: 100%;
     right: 0;
-    background-color: #222;
+    background-color: #000000;
     border: 1px solid #444;
     border-radius: 4px;
     margin-top: 5px;
@@ -62,16 +95,17 @@ header {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
-  }
+    background-color: #fff;
+}
 
 .language-options div {
     padding: 8px 12px;
-    color: white;
+    color: rgb(0, 0, 0);
     cursor: pointer;
 }
 
 .language-options div:hover {
-    background-color: #333;
+    background-color: #423f47;
 }
 
 .container {
@@ -82,6 +116,81 @@ header {
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     flex-grow: 1;
+}
+
+.profile-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px;
+    border: 1px solid #000000;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #fff;
+}
+
+.profile-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 40px;
+}
+
+.profile-icon {
+    font-size: 80px;
+    color: #111;
+    background-color: #e5e7eb;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.projects-container {
+    margin-top: 20px;
+}
+
+.projects-list {
+    list-style: none;
+    padding: 0;
+}
+
+.projects-list li {
+    margin: 10px 0;
+}
+
+.profile-details p {
+    margin: 5px 0;
+    color: #555;
+}
+
+.avatar-upload {
+    margin: 20px 0;
+    position: relative;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #ccc; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.avatar-upload img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.file-input {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0; 
+    cursor: pointer;
 }
 
 h2 {
@@ -99,18 +208,46 @@ input[type="password"] {
     border-radius: 6px;
 }
 
-button,a {
+button {
     padding: 10px 15px;
     border: none;
     border-radius: 6px;
-    background-color: #333;
+    background-color: #110b53;
     color: white;
     cursor: pointer;
     transition: background 0.3s;
 }
 
 button:hover {
-    background-color: #555;
+    background-color: #3123f6;
+}
+
+.edit-btn {
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.edit-btn:hover {
+  background-color: #3123f6;
+}
+
+.logout-btn {
+  text-decoration: none;
+  color: #ffffff;
+  background-color: #2563eb;
+  padding: 8px 16px;
+  border-radius: 5px;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.logout-btn:hover {
+  background-color: #3123f6;
 }
 
 .reg {
@@ -120,7 +257,7 @@ button:hover {
 }
 
 footer {
-    background-color: #222;
+    background-color: #ffffff;
     color: #ccc;
     text-align: center;
     padding: 20px;
@@ -132,7 +269,7 @@ footer {
 }
 
 .footer-links a {
-    color: #ccc;
+    color: #000000;
     text-decoration: none;
     margin: 0 10px;
 }
@@ -140,35 +277,69 @@ footer {
 .footer-links a:hover {
     text-decoration: underline;
 }
-.profile-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 20px;
-    border: 1px solid #ccc;
-    padding: 20px;
-    border-radius: 10px;
-}
 
-.profile-info {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.profile-icon {
-    margin-right: 20px;
-}
-
-.projects-container {
+.modal {
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
     width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.6);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
 }
 
-.projects-list {
-    list-style: none;
-    padding: 0;
+.modal.show {
+    opacity: 1;
+    pointer-events: all;
 }
 
-.projects-list li {
-    margin: 10px 0;
+.modal-content {
+    background-color: #fff;
+    margin: 10% auto;
+    padding: 30px;
+    border-radius: 10px;
+    width: 400px;
+    transform: translateY(-30px);
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.modal.show .modal-content {
+    transform: translateY(0);
+    opacity: 1;
+}
+.modal-content h3 {
+    margin-top: 0;
+}
+
+.modal-content input,
+.modal-content textarea {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.modal-content .save-btn {
+    background-color: #10b981;
+    color: white;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.modal-content .close-btn {
+    background-color: #ef4444;
+    color: white;
+    padding: 8px 14px;
+    border: none;
+    border-radius: 5px;
+    float: right;
+    margin-left: 10px;
+    cursor: pointer;
 }

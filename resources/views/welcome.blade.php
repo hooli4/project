@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Личный кабинет</title>
+    <title>React in Laravel</title>
     @viteReactRefresh
     @vite(['resources/css/index.css', 'resources/js/main.jsx'])
 </head>
